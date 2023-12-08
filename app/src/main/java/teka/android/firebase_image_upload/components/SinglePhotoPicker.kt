@@ -16,7 +16,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
+import teka.android.firebase_image_upload.presentation.ImagePIckerViewModel
 import teka.android.firebase_image_upload.utils.StorageUtil
 
 
@@ -25,6 +27,9 @@ fun SinglePhotoPicker(){
     var uri by remember{
         mutableStateOf<Uri?>(null)
     }
+
+    val viewModel: ImagePIckerViewModel = viewModel()
+
 
     val singlePhotoPicker = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia(),
@@ -49,9 +54,10 @@ fun SinglePhotoPicker(){
         AsyncImage(model = uri, contentDescription = null, modifier = Modifier.size(248.dp))
 
         Button(onClick = {
-            uri?.let{
-                StorageUtil.uploadToStorage(uri=it, context=context, type="image")
-            }
+            uri?.let { viewModel.saveImageToFirebaseStorage(uri = it, context = context, progressText = "1/1") }
+//            uri?.let{
+//                StorageUtil.uploadToStorage(uri=it, context=context, type="image")
+//            }
 
         }){
             Text("Upload")

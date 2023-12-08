@@ -10,6 +10,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import teka.android.firebase_image_upload.components.MultiplePhotoPicker
 import teka.android.firebase_image_upload.components.SinglePhotoPicker
 import teka.android.firebase_image_upload.ui.theme.Firebase_image_uploadTheme
 
@@ -23,7 +24,8 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    SinglePhotoPicker()
+                    MultiplePhotoPicker()
+//                    SinglePhotoPicker()
                 }
             }
         }

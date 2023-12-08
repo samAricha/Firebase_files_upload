@@ -53,7 +53,7 @@ fun SingleVideoPicker(){
 
             Button(onClick = {
                 uri?.let{
-                    StorageUtil.uploadToStorage(uri=it, context=context, type="video")
+//                    StorageUtil.uploadToStorage(uri=it, context=context, type="video")
                 }
 
             }){

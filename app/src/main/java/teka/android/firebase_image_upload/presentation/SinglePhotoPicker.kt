@@ -17,6 +17,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import teka.android.firebase_image_upload.utils.StorageUtil
 
 @Composable
@@ -52,7 +54,8 @@ fun SinglePhotoPicker(){
 
         Button(onClick = {
             uri?.let{
-                StorageUtil.uploadToStorage(uri=it, context=context, type="image")
+
+//                StorageUtil.uploadToStorage(uri=it, context=context, type="image")
             }
 
         }){

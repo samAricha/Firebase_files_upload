@@ -18,12 +18,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
+import teka.android.firebase_image_upload.presentation.ImagePIckerViewModel
 import teka.android.firebase_image_upload.utils.StorageUtil
 
 @Composable
 fun MultiplePhotoPicker(){
     val context = LocalContext.current
+    val viewModel: ImagePIckerViewModel = viewModel()
+
 
     var imageUris by remember{
         mutableStateOf<List<Uri>>(emptyList())
@@ -55,19 +59,29 @@ fun MultiplePhotoPicker(){
 
             }
 
-        }
+            item {
+                Button(onClick = {
+                    val imageNumber = imageUris.size
+                    imageUris.forEachIndexed { index,  uri ->
+                        val uploadNumber = index + 1
+                        val totalImages = imageUris.size
+                        val progressText = "$uploadNumber/$totalImages"
 
-        Button(onClick = {
-            imageUris.forEach{ uri ->
 
-                uri?.let{
-                    StorageUtil.uploadToStorage(uri=it, context=context, type="image")
+                        uri?.let { viewModel.saveImageToFirebaseStorage(uri = it, context = context, progressText = progressText) }
+                        uri?.let{
+//                    StorageUtil.uploadToStorage(uri=it, context=context, type="image")
+                        }
+                    }
+
+                }){
+                    Text("Upload")
                 }
             }
 
-        }){
-            Text("Upload")
         }
+
+
     }
 
 
