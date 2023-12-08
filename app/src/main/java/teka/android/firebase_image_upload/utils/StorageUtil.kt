@@ -4,20 +4,11 @@ import android.content.Context
 import android.net.Uri
 import android.util.Log
 import android.widget.Toast
-import androidx.annotation.NonNull
-import com.google.android.gms.tasks.Continuation
-import com.google.android.gms.tasks.OnCompleteListener
-import com.google.android.gms.tasks.Task
-import com.google.android.gms.tasks.Tasks
 import com.google.firebase.ktx.Firebase
-import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
-import com.google.firebase.storage.UploadTask
 import com.google.firebase.storage.ktx.storage
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
-import java.security.AccessController.getContext
 import java.util.UUID
 
 
@@ -51,6 +42,7 @@ class StorageUtil{
 
             byteArray?.let{
                 val uploadTask = spaceRef.putBytes(byteArray)
+
 //                    val taskSnapshot: UploadTask.TaskSnapshot = Tasks.await(uploadTask)
 //                    // Retrieve the download URL
 //                    val downloadUri: Uri = Tasks.await(taskSnapshot.storage.downloadUrl)
@@ -67,22 +59,43 @@ class StorageUtil{
                         ).show()
                         // Handle unsuccessful uploads
                     }.addOnSuccessListener { taskSnapshot ->
+//                        val storageRef = Firebase.storage.reference
+//                        storageRef.child("folder/subfolder/picture.png").downloadUrl
+//                            .addOnSuccessListener { url ->
+//                                // do whatever with your url
+//                            }
+//                            .addOnFailureListener { exception ->
+//                                Log.e(TAG, "Exception: ${exception.message}")
+//                            }
+
                         Toast.makeText(
                             context,
                             "upload succeeded: $progressText",
                             Toast.LENGTH_SHORT
                         ).show()
 //                        Log.d("Image url", snapshot.toString())
+                    }.addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            val fileUri = task.result.uploadSessionUri.toString()
+
+                            val downloadUri = task.result.uploadSessionUri
+
+                            //URL
+//                            val url = downloadUri!!.result
+
+
+//                            Toast.makeText(
+//                                context,
+//                                "upload Complete: $downloadUri",
+//                                Toast.LENGTH_SHORT
+//                            ).show()
+                            Log.d("Image url", downloadUri.toString())
+                        }
                     }
 
                 }
 
             }
-
-
-
-
-
         }
 
 
@@ -106,31 +119,50 @@ class StorageUtil{
 
 
 
-            val uploadTask = spaceRef.child("filename")
-                .putFile(uri)
-            val urlTask: Task<Uri?> = uploadTask.continueWithTask { task ->
-                if (!task.isSuccessful()) {
-                    throw task.getException()!!
+            val byteArray: ByteArray? = context.contentResolver
+                .openInputStream(uri)
+                ?.use { it.readBytes() }
+
+
+
+            byteArray?.let{
+                val uploadTask = spaceRef.putBytes(byteArray)
+
+                val urlTask = uploadTask.continueWithTask<Uri> { task ->
+                    if (!task.isSuccessful) {
+                        throw task.exception!!
+                    }
+
+                    // Continue with the task to get the download URL
+                    spaceRef.child("avatarName").downloadUrl
+                }.addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        val downloadUri = task.result
+//                            spaceRef.child("avatar_image")
+//                            .setValue(downloadUri.toString())
+
+                        Toast.makeText(
+                            context,
+                            "success",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    } else {
+                        // Handle failures
+                        // ...
+                        Toast.makeText(
+                            context,
+                            "Failed",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
                 }
 
-                // Continue with the task to get the download URL
-                spaceRef.child("avatarName").downloadUrl
-            }.addOnCompleteListener(OnCompleteListener<Uri?> { task ->
-                if (task.isSuccessful) {
-                    val downloadUri = task.result
 
-                    Toast.makeText(
-                        context,
-                        "upload succeeded: $downloadUri",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    Log.d("Image url", downloadUri.toString())
+            }
 
-                } else {
-                    // Handle failures
-                    // ...
-                }
-            })
+
+
+
         }
 
     }

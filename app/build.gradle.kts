@@ -82,7 +82,6 @@ dependencies {
     // firebase storage
     implementation("com.google.firebase:firebase-storage-ktx")
 
-
     // navigation
     implementation("androidx.navigation:navigation-compose:2.7.5")
 
