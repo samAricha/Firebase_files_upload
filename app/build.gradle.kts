@@ -1,11 +1,12 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    id("com.google.gms.google-services")
 }
 
 android {
     namespace = "teka.android.firebase_image_upload"
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "teka.android.firebase_image_upload"
@@ -73,11 +74,14 @@ dependencies {
     // coil for asyncImage
     implementation("io.coil-kt:coil-compose:2.3.0")
 
-    // firebase
-    implementation(platform("com.google.firebase:firebase-bom:32.2.2"))
+    // Import the Firebase BoM
+    // When using the BoM, don't specify versions in Firebase dependencies
+    implementation(platform("com.google.firebase:firebase-bom:32.6.0"))
+    //firebase analytics
     implementation("com.google.firebase:firebase-analytics-ktx")
     // firebase storage
     implementation("com.google.firebase:firebase-storage-ktx")
+
 
     // navigation
     implementation("androidx.navigation:navigation-compose:2.7.5")
